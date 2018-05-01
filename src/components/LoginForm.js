@@ -15,6 +15,7 @@ class LoginForm extends Component {
             error: false,
         }
     }
+
     handleSubmit(event) {
         event.preventDefault();
         this.loginUser(this.state.email, this.state.password);
@@ -40,7 +41,7 @@ class LoginForm extends Component {
                 localStorage.setItem('token', JSON.stringify(this.state.token));
                 localStorage.setItem('email',
                     JSON.stringify(this.state.email));
-                // window.location.reload()
+                window.location.href = '/dashboard'
                 // this.props.history.pushState({token: this.state.token}, '/home');
             } else {
                 this.setState({
@@ -53,28 +54,36 @@ class LoginForm extends Component {
 
   render() {
     return (
-      <Container fluid textAlign="center" className="ui middle aligned center aligned grid">
-        <div className="column login-form">
+      <Container fluid textAlign="center" className="ui middle aligned aligned center-item grid">
+        <div className="column ui medium form">
+          <div className="content large">
+          Log-in to your account
+          </div>
+          <div className="field">
+            <Input iconPosition='left' name="email" placeholder='Email' onChange={this.handleFieldChange}>
+              <Icon name='at' />
+            <input />
+            </Input>
+          </div>
+          <div className="field">
+            <Input iconPosition='left' name="password" placeholder='Password' type="password" onChange={this.handleFieldChange}>
+              <Icon name='lock' />
+            <input />
+            </Input>
+          </div>
 
-          <Input iconPosition='left' name="email" placeholder='Email' onChange={this.handleFieldChange}>
-            <Icon name='at' />
-          <input />
-          </Input>
-          <Input iconPosition='left' name="password" placeholder='Password' type="password" onChange={this.handleFieldChange}>
-            <Icon name='lock' />
-          <input />
-          </Input>
-
-          <Button
-            primary
-            href="/login"
-            icon
-            labelPosition="right"
-            size="small"
-            onClick={this.handleSubmit}
-            >Login
-            <Icon name="sign in"/>
-            </Button>
+          <div>
+            <Button
+              primary
+              href="/login"
+              icon
+              labelPosition="right"
+              size="large"
+              onClick={this.handleSubmit}
+              >Login
+              <Icon name="sign in"/>
+              </Button>
+            </div>
 
         </div>
 

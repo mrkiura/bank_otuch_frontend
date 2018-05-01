@@ -56,7 +56,7 @@ class RegisterForm extends Component {
                 localStorage.setItem('token', JSON.stringify(this.state.token));
                 localStorage.setItem('email',
                     JSON.stringify(this.state.email));
-                // window.location.reload()
+                window.location.href = '/dashboard'
                 // this.props.history.pushState({token: this.state.token}, '/home');
             } else {
                 this.setState({
@@ -71,23 +71,33 @@ class RegisterForm extends Component {
     return (
       <Container fluid textAlign="center" className="ui middle aligned center aligned grid">
         <div className="column register-form">
-          <Input iconPosition='left' name="email" placeholder='Email' onChange={this.handleFieldChange}>
-            <Icon name="at" />
-          <input />
-          </Input>
-          <Input iconPosition="left" name="national_id" placeholder="national Id" onChange={this.handleFieldChange}>
-            <Icon name="at" />
-          <input />
-          </Input>
-          <Input name="first_name" placeholder="First Name" onChange={this.handleFieldChange}>
-          <input />
-          </Input>
-          <Input name="last_name" placeholder="Last Name" onChange={this.handleFieldChange}>
-          <input />
-          </Input>
-          <Input name="date_of_birth" placeholder="Date of Birth" type="date" onChange={this.handleFieldChange}>
-          <input />
-          </Input>
+          <div className="field">
+            <Input iconPosition='left' name="email" placeholder='Email' onChange={this.handleFieldChange}>
+              <Icon name="at" />
+            <input />
+            </Input>
+          </div>
+          <div className="field">
+            <Input iconPosition="left" name="national_id" placeholder="national Id" onChange={this.handleFieldChange}>
+              <Icon name="at" />
+            <input />
+            </Input>
+          </div>
+          <div className="field">
+            <Input name="first_name" placeholder="First Name" onChange={this.handleFieldChange}>
+            <input />
+            </Input>
+          </div>
+          <div>
+            <Input name="last_name" placeholder="Last Name" onChange={this.handleFieldChange}>
+            <input />
+            </Input>
+          </div>
+          <div>
+            <Input name="date_of_birth" placeholder="Date of Birth" type="date" onChange={this.handleFieldChange}>
+            <input />
+            </Input>
+          </div>
 
           <Button
             primary

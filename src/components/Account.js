@@ -37,10 +37,23 @@ const fetchItems = (url) => {
     });
   });
 };
-//
-// const createAccount = () => {
-//
-// }
+
+const createAccount = (url, account_type) => {
+  const token = JSON.parse(localStorage.getItem('token') || '{}')
+  return new Promise((resolve, reject) => {
+    request
+        .post('http://127.0.0.1:8000/api/v1/accounts/')
+        .set('Authorization', `JWT ${token}`)
+        .send({ account_type })
+        .end((error, result) => {
+          if (!error) {
+            resolve(result.body);
+          } else {
+            reject(error);
+          }
+        });
+  })
+}
 
 const inlineStyle = {
   modal : {
@@ -55,10 +68,15 @@ class Accounts extends Component {
     super();
     this.state = {
       'accounts': [],
-      'modalOpen': false
+      'modalOpen': false,
+      'account_type': '',
+      'account_created': false
     }
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.onAccountTypeChange = this.onAccountTypeChange.bind(this);
+    this.handleCreateAccount = this.handleCreateAccount.bind(this);
+    this.refreshAccountList = this.refreshAccountList.bind(this);
   }
 
   openModal() {
@@ -68,14 +86,44 @@ class Accounts extends Component {
   closeModal() {
     // Submit data and close modal.
     this.setState({ modalOpen: false })
+    this.handleCreateAccount()
   }
 
-  componentDidMount() {
+  onAccountTypeChange(event, data) {
+    let key = data.name;
+    let value = data.value;
+    console.log(key, value);
+    this.setState({
+        [key]: value
+    });
+  }
+
+  refreshAccountList() {
     if (localStorage.getItem('token')) {
       fetchItems('http://127.0.0.1:8000/api/v1/accounts/').then((response) => {
         const accounts = response;
         this.setState({ accounts });
       });
+    } else {
+      window.location.href = '/login';
+    }
+
+  }
+
+  componentDidMount() {
+    this.refreshAccountList();
+  }
+
+  handleCreateAccount() {
+    if (localStorage.getItem('token')) {
+      createAccount(
+          'http://127.0.0.1:8000/api/v1/accounts/',
+          this.state.account_type).then((response) => {
+            this.setState({
+                account_created: true
+            });
+            this.refreshAccountList(); // refresh the accounts
+          });
     } else {
       window.location.href = '/login';
     }
@@ -127,6 +175,8 @@ class Accounts extends Component {
                 <Select
                   placeholder="Select the account type"
                   options={accountOptions}
+                  onChange={this.onAccountTypeChange}
+                  name="account_type"
                 />
                 </div>
               </div>
@@ -134,7 +184,7 @@ class Accounts extends Component {
             </Modal.Content>
             <Modal.Actions>
               <Button negative>
-                No
+                Cancel
               </Button>
               <Button positive icon='checkmark' labelPosition='right' content='Submit' onClick={this.closeModal} />
             </Modal.Actions>
