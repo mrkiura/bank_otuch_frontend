@@ -161,7 +161,7 @@ class WithdrawForm extends Component {
               </Form.Group>
 
               <Form.TextArea name="description" label='Description' placeholder='Describe the transaction' onChange={this.onAccountFormChange}/>
-              <Form.Checkbox label='Credit my account with the amount indicated' />
+              <Form.Checkbox label='Debit my account with the amount indicated' />
               <Form.Button onClick={this.handleSubmit}>Submit</Form.Button>
           </Form>
           <Message hidden={this.state.messageHidden} positive={this.state.success} negative={!this.state.success}>
