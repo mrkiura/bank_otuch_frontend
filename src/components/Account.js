@@ -6,7 +6,7 @@ import request from 'superagent';
 
 const Account = ({account}, key) => (
   <Table.Row>
-    <Table.Cell collapsing>
+    <Table.Cell collapsing>{account.id}
     </Table.Cell>
     <Table.Cell>{account.account_type}</Table.Cell>
     <Table.Cell>{moment(account.last_modified).fromNow()}</Table.Cell>
@@ -107,7 +107,6 @@ class Accounts extends Component {
     } else {
       window.location.href = '/login';
     }
-
   }
 
   componentDidMount() {
@@ -137,7 +136,7 @@ class Accounts extends Component {
         <Table compact celled definition>
           <Table.Header>
             <Table.Row>
-              <Table.HeaderCell />
+              <Table.HeaderCell>Account number</Table.HeaderCell>
               <Table.HeaderCell>Account type</Table.HeaderCell>
               <Table.HeaderCell>Last Transaction date</Table.HeaderCell>
               <Table.HeaderCell>Active</Table.HeaderCell>
@@ -196,3 +195,4 @@ class Accounts extends Component {
 }
 
 export default Accounts;
+export { fetchItems };

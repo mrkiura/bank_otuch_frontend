@@ -1,6 +1,7 @@
 import React from 'react'
 import { Menu, Tab, Container } from 'semantic-ui-react';
 import Accounts from './Account';
+import SingleAccount from './SingleAccount';
 
 
 const panes = [
@@ -9,14 +10,14 @@ const panes = [
     render: () => <Tab.Pane><Accounts /></Tab.Pane>,
   },
   {
-    menuItem: <Menu.Item key='transactions'>Transactions</Menu.Item>,
-    render: () => <Tab.Pane>Transactions</Tab.Pane>,
+    menuItem: <Menu.Item key='transactions'>Manage</Menu.Item>,
+    render: () => <Tab.Pane><SingleAccount /></Tab.Pane>,
   },
 ]
 
 const Dashboard = () => (
-  <Container fluid textAlign="center" className="ui middle aligned center aligned grid">
-    <Tab panes={panes} className="column"/>
+  <Container textAlign="center" className="ui center aligned grid">
+    <Tab panes={panes} className="column container-height"/>
   </Container>
 )
 

@@ -6,7 +6,7 @@ import Home from './components/Home';
 import Dashboard from './components/Dashboard';
 
 const App = () => (
-  <div>
+  <div className="container-height">
   <Switch>
       <Route exact path="/" component={Home} />
       <Route path="/login" component={LoginForm} />
