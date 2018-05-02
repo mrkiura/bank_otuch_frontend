@@ -6,7 +6,7 @@ import request from 'superagent';
 
 
 let accounts = []
-fetchItems('http://127.0.0.1:8000/api/v1/accounts/').then((response) => {
+fetchItems('https://bank-otuch.herokuapp.com/api/v1/accounts/').then((response) => {
   if (response && response.length > 0) {
     accounts = response.map((account) => (
       {key: account.id, text: `Account ${account.id} (${account.account_type})`, value: account.id}
@@ -18,7 +18,7 @@ const createTransaction = (transaction_type, account, description, amount) => {
   const token = JSON.parse(localStorage.getItem('token') || '{}')
   return new Promise((resolve, reject) => {
     request
-        .post('http://127.0.0.1:8000/api/v1/transactions/')
+        .post('https://bank-otuch.herokuapp.com/api/v1/transactions/')
         .set('Authorization', `JWT ${token}`)
         .send({ transaction_type, account, description, amount })
         .end((error, result) => {
@@ -199,7 +199,7 @@ class Transactions extends Component {
 
   getTransactions(account_no) {
     if (localStorage.getItem('token')) {
-      fetchItems(`http://127.0.0.1:8000/api/v1/transactions/?account=${account_no}`).then((response) => {
+      fetchItems(`https://bank-otuch.herokuapp.com/api/v1/transactions/?account=${account_no}`).then((response) => {
         const transactions = response;
         this.setState({ transactions });
       });

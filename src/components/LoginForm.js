@@ -30,7 +30,7 @@ class LoginForm extends Component {
     }
     loginUser(username, password) {
     request
-        .post('http://127.0.0.1:8000/api/v1/auth/login/')
+        .post('https://bank-otuch.herokuapp.com/api/v1/auth/login/')
         .send({'email': username, 'password': password })
         .end((err, result) => {
             if (result.status === 200) {

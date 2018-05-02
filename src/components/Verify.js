@@ -33,7 +33,7 @@ class VerifyForm extends Component {
     }
     verifyUser(email, old_password, new_password) {
     request
-        .post('http://127.0.0.1:8000/api/v1/auth/verify/')
+        .post('https://bank-otuch.herokuapp.com/api/v1/auth/verify/')
         .send({ email, old_password, new_password })
         .end((err, result) => {
             if (result.status === 200) {

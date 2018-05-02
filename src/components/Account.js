@@ -42,7 +42,7 @@ const createAccount = (url, account_type) => {
   const token = JSON.parse(localStorage.getItem('token') || '{}')
   return new Promise((resolve, reject) => {
     request
-        .post('http://127.0.0.1:8000/api/v1/accounts/')
+        .post('https://bank-otuch.herokuapp.com/api/v1/accounts/')
         .set('Authorization', `JWT ${token}`)
         .send({ account_type })
         .end((error, result) => {
@@ -99,7 +99,7 @@ class Accounts extends Component {
 
   refreshAccountList() {
     if (localStorage.getItem('token')) {
-      fetchItems('http://127.0.0.1:8000/api/v1/accounts/').then((response) => {
+      fetchItems('https://bank-otuch.herokuapp.com/api/v1/accounts/').then((response) => {
         const accounts = response;
         if (accounts && accounts.length > 0) {
           this.setState({ accounts });
@@ -117,7 +117,7 @@ class Accounts extends Component {
   handleCreateAccount() {
     if (localStorage.getItem('token')) {
       createAccount(
-          'http://127.0.0.1:8000/api/v1/accounts/',
+          'https://bank-otuch.herokuapp.com/api/v1/accounts/',
           this.state.account_type).then((response) => {
             this.setState({
                 account_created: true

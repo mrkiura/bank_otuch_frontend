@@ -38,7 +38,7 @@ class RegisterForm extends Component {
     }
     registerUser(email, first_name, last_name, date_of_birth, national_id) {
     request
-        .post('http://127.0.0.1:8000/api/v1/auth/register/')
+        .post('https://bank-otuch.herokuapp.com/api/v1/auth/register/')
         .send(
           {
             'email': email,
