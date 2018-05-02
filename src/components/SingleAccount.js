@@ -7,9 +7,11 @@ import request from 'superagent';
 
 let accounts = []
 fetchItems('http://127.0.0.1:8000/api/v1/accounts/').then((response) => {
-  accounts = response.map((account) => (
-    {key: account.id, text: `Account ${account.id} (${account.account_type})`, value: account.id}
-  ));
+  if (response && response.length > 0) {
+    accounts = response.map((account) => (
+      {key: account.id, text: `Account ${account.id} (${account.account_type})`, value: account.id}
+    ));
+  }
 });
 
 const createTransaction = (transaction_type, account, description, amount) => {
@@ -188,7 +190,6 @@ class Transactions extends Component {
     this.setState({
         [key]: value
     });
-    console.log(this.state);
 
   }
 
@@ -200,7 +201,6 @@ class Transactions extends Component {
     if (localStorage.getItem('token')) {
       fetchItems(`http://127.0.0.1:8000/api/v1/transactions/?account=${account_no}`).then((response) => {
         const transactions = response;
-        console.log(transactions);
         this.setState({ transactions });
       });
     } else {

@@ -48,7 +48,6 @@ class RegisterForm extends Component {
             'national_id': national_id,
           })
         .end((err, result) => {
-            console.log(result)
             if (result.status === 200) {
                 this.setState({
                     token: result.body.token
@@ -62,7 +61,6 @@ class RegisterForm extends Component {
                 this.setState({
                     error: true
                 })
-                console.log(err)
             }
         })
     }

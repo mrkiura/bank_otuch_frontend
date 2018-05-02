@@ -29,7 +29,7 @@ const fetchItems = (url) => {
     .get(url)
     .set('Authorization', `JWT ${token}`)
     .end((error, result) => {
-      if (!error) {
+      if (!error && result.body.results) {
         resolve(result.body.results);
       } else {
         reject(error);
@@ -92,7 +92,6 @@ class Accounts extends Component {
   onAccountTypeChange(event, data) {
     let key = data.name;
     let value = data.value;
-    console.log(key, value);
     this.setState({
         [key]: value
     });
@@ -102,7 +101,9 @@ class Accounts extends Component {
     if (localStorage.getItem('token')) {
       fetchItems('http://127.0.0.1:8000/api/v1/accounts/').then((response) => {
         const accounts = response;
-        this.setState({ accounts });
+        if (accounts && accounts.length > 0) {
+          this.setState({ accounts });
+        }
       });
     } else {
       window.location.href = '/login';
@@ -145,9 +146,11 @@ class Accounts extends Component {
           </Table.Header>
 
           <Table.Body>
-            {this.state.accounts.map((account, index) => (
-              <Account account={account} key={index}/>
-            ))}
+            {this.state.accounts.length > 0 ?
+              this.state.accounts.map((account, index) => (
+                <Account account={account} key={index}/>
+              )) : null
+            }
           </Table.Body>
 
           <Table.Footer fullWidth>
