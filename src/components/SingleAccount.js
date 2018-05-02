@@ -62,7 +62,8 @@ class DepositForm extends Component {
           .catch((error) => {
             this.setState({
               messageHidden: false,
-              messageContent: `error: ${error}`,
+              messageContent: 'An error occurred while processing your' +
+                'request. Remember to provide a description',
               success: false
             })}
           );
