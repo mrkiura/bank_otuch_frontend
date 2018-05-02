@@ -87,12 +87,12 @@ class RegisterForm extends Component {
             <input />
             </Input>
           </div>
-          <div>
+          <div className="field">
             <Input name="last_name" placeholder="Last Name" onChange={this.handleFieldChange}>
             <input />
             </Input>
           </div>
-          <div>
+          <div className="field">
             <Input name="date_of_birth" placeholder="Date of Birth" type="date" onChange={this.handleFieldChange}>
             <input />
             </Input>
