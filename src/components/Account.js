@@ -48,6 +48,7 @@ const createAccount = (url, account_type) => {
         .end((error, result) => {
           if (!error) {
             resolve(result.body);
+            window.location.href = '/dashboard'
           } else {
             reject(error);
           }
