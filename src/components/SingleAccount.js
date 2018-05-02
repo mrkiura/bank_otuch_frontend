@@ -1,26 +1,24 @@
 import React, { Component } from 'react';
-import { Checkbox, Tab, Form, Table, Message } from 'semantic-ui-react';
+import { Tab, Form, Table, Message } from 'semantic-ui-react';
 import { fetchItems } from './Account';
+import Transaction from './Transaction';
 import request from 'superagent';
 
 
-const options = [
-  { key: 'm', text: 'Account 1', value: '1' },
-  { key: 'f', text: 'Account 2', value: '2' },
-]
-
 let accounts = []
-fetchItems('http://127.0.0.1:8000/api/v1/accounts/').then((response) => {
-  accounts = response.map((account) => (
-    {key: account.id, text: `Account ${account.id} (${account.account_type})`, value: account.id}
-  ));
+fetchItems('https://bank-otuch.herokuapp.com/api/v1/accounts/').then((response) => {
+  if (response && response.length > 0) {
+    accounts = response.map((account) => (
+      {key: account.id, text: `Account ${account.id} (${account.account_type})`, value: account.id}
+    ));
+  }
 });
 
 const createTransaction = (transaction_type, account, description, amount) => {
   const token = JSON.parse(localStorage.getItem('token') || '{}')
   return new Promise((resolve, reject) => {
     request
-        .post('http://127.0.0.1:8000/api/v1/transactions/')
+        .post('https://bank-otuch.herokuapp.com/api/v1/transactions/')
         .set('Authorization', `JWT ${token}`)
         .send({ transaction_type, account, description, amount })
         .end((error, result) => {
@@ -64,7 +62,8 @@ class DepositForm extends Component {
           .catch((error) => {
             this.setState({
               messageHidden: false,
-              messageContent: `error: ${error}`,
+              messageContent: 'An error occurred while processing your' +
+                'request. Remember to provide a description',
               success: false
             })}
           );
@@ -162,7 +161,7 @@ class WithdrawForm extends Component {
               </Form.Group>
 
               <Form.TextArea name="description" label='Description' placeholder='Describe the transaction' onChange={this.onAccountFormChange}/>
-              <Form.Checkbox label='Credit my account with the amount indicated' />
+              <Form.Checkbox label='Debit my account with the amount indicated' />
               <Form.Button onClick={this.handleSubmit}>Submit</Form.Button>
           </Form>
           <Message hidden={this.state.messageHidden} positive={this.state.success} negative={!this.state.success}>
@@ -175,50 +174,69 @@ class WithdrawForm extends Component {
 
 
 class Transactions extends Component {
-  handleChange = (e, { value }) => this.setState({ value })
-  state = {}
+  constructor() {
+    super();
+    this.state = {
+      transactions: [],
+      activeAccount: 0
+    }
+    this.onAccountFormChange = this.onAccountFormChange.bind(this);
+    this.getTransactions = this.getTransactions.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  onAccountFormChange(event, data) {
+    let key = data.name;
+    let value = data.value;
+    this.setState({
+        [key]: value
+    });
+
+  }
+
+  handleSubmit() {
+    this.getTransactions(this.state.activeAccount)
+  }
+
+  getTransactions(account_no) {
+    if (localStorage.getItem('token')) {
+      fetchItems(`https://bank-otuch.herokuapp.com/api/v1/transactions/?account=${account_no}`).then((response) => {
+        const transactions = response;
+        this.setState({ transactions });
+      });
+    } else {
+      window.location.href = '/login';
+    }
+  }
 
   render() {
     return (
       <div>
       <Form>
             <Form.Group widths='equal'>
-              <Form.Select fluid label='Account' options={options} placeholder='Select Account' />
+              <Form.Select fluid name="activeAccount" onChange={this.onAccountFormChange} label='Account' options={accounts} placeholder='Select Account' />
             </Form.Group>
+            <Form.Button onClick={this.handleSubmit}>View Transactions</Form.Button>
       </Form>
       <Table celled compact definition>
-  <Table.Header fullWidth>
-    <Table.Row>
-      <Table.HeaderCell />
-      <Table.HeaderCell>Name</Table.HeaderCell>
-      <Table.HeaderCell>Registration Date</Table.HeaderCell>
-      <Table.HeaderCell>E-mail address</Table.HeaderCell>
-      <Table.HeaderCell>Premium Plan</Table.HeaderCell>
-    </Table.Row>
-  </Table.Header>
-
-  <Table.Body>
-    <Table.Row>
-      <Table.Cell collapsing>
-        <Checkbox slider />
-      </Table.Cell>
-      <Table.Cell>John Lilki</Table.Cell>
-      <Table.Cell>September 14, 2013</Table.Cell>
-      <Table.Cell>jhlilk22@yahoo.com</Table.Cell>
-      <Table.Cell>No</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell collapsing>
-        <Checkbox slider />
-      </Table.Cell>
-      <Table.Cell>Jamie Harington</Table.Cell>
-      <Table.Cell>January 11, 2014</Table.Cell>
-      <Table.Cell>jamieharingonton@yahoo.com</Table.Cell>
-      <Table.Cell>Yes</Table.Cell>
-    </Table.Row>
-  </Table.Body>
-</Table>
-
+      <Table.Header fullWidth>
+        <Table.Row>
+          <Table.HeaderCell />
+          <Table.HeaderCell>Transaction Date</Table.HeaderCell>
+          <Table.HeaderCell>Description</Table.HeaderCell>
+          <Table.HeaderCell>Transaction Type</Table.HeaderCell>
+          <Table.HeaderCell>Amount</Table.HeaderCell>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        {this.state.transactions.length > 0 ?
+        this.state.transactions.map((transaction, index) => (
+          <Transaction transaction={transaction} key={index}/>
+        ))
+        : null
+      }
+      </Table.Body>
+      </Table>
       </div>
     );
   }

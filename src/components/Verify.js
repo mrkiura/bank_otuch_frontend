@@ -1,24 +1,27 @@
 import React, {Component} from "react";
-import { Icon, Button, Input, Container, } from 'semantic-ui-react';
+import { Icon, Button, Input, Container, Message} from 'semantic-ui-react';
 import request from 'superagent';
 
 
-class LoginForm extends Component {
+class VerifyForm extends Component {
   constructor() {
         super();
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleFieldChange = this.handleFieldChange.bind(this);
         this.state = {
             email: '',
-            password: '',
+            new_password: '',
+            old_password: '',
             token: '',
             error: false,
+            messageHidden: true,
+            success: false
         }
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        this.loginUser(this.state.email, this.state.password);
+        this.verifyUser(this.state.email, this.state.old_password, this.state.new_password);
     }
     handleFieldChange(event, data) {
         event.preventDefault();
@@ -28,23 +31,29 @@ class LoginForm extends Component {
             [key]: value
         });
     }
-    loginUser(username, password) {
+    verifyUser(email, old_password, new_password) {
     request
-        .post('https://bank-otuch.herokuapp.com/api/v1/auth/login/')
-        .send({'email': username, 'password': password })
+        .post('https://bank-otuch.herokuapp.com/api/v1/auth/verify/')
+        .send({ email, old_password, new_password })
         .end((err, result) => {
             if (result.status === 200) {
                 this.setState({
-                    token: result.body.token
+                    token: result.body.token,
+                    messageHidden: false,
+                    messageContent: 'Account verified successfully. Please login using your new password.',
+                    success: true
                 });
-                localStorage.setItem('token', JSON.stringify(this.state.token));
-                localStorage.setItem('email',
-                    JSON.stringify(this.state.email));
-                window.location.href = '/dashboard'
+                setTimeout(() => {
+                  this.setState({ messageHidden: true })
+                }, 2000)
+                window.location.href = '/login'
                 // this.props.history.pushState({token: this.state.token}, '/home');
             } else {
                 this.setState({
-                    error: true
+                    error: true,
+                    messageHidden: false,
+                    messageContent: 'There were errors. Make sure the credentials are correct.',
+                    success: false
                 })
             }
         })
@@ -55,7 +64,7 @@ class LoginForm extends Component {
       <Container fluid textAlign="center" className="ui middle aligned aligned center-item grid">
         <div className="column ui medium form">
           <div className="content large">
-          Log-in to your account
+          Verify your account
           </div>
           <div className="field">
             <Input iconPosition='left' name="email" placeholder='Email' onChange={this.handleFieldChange}>
@@ -64,7 +73,13 @@ class LoginForm extends Component {
             </Input>
           </div>
           <div className="field">
-            <Input iconPosition='left' name="password" placeholder='Password' type="password" onChange={this.handleFieldChange}>
+            <Input iconPosition='left' name="old_password" placeholder='One-time Password' type="password" onChange={this.handleFieldChange}>
+              <Icon name='lock' />
+            <input />
+            </Input>
+          </div>
+          <div className="field">
+            <Input iconPosition='left' name="new_password" placeholder='Password' type="password" onChange={this.handleFieldChange}>
               <Icon name='lock' />
             <input />
             </Input>
@@ -73,15 +88,18 @@ class LoginForm extends Component {
           <div>
             <Button
               primary
-              href="/login"
+              href="/verify"
               icon
               labelPosition="right"
               size="large"
               onClick={this.handleSubmit}
-              >Login
+              >Verify
               <Icon name="sign in"/>
               </Button>
             </div>
+            <Message hidden={this.state.messageHidden} positive={this.state.success} negative={!this.state.success}>
+                {this.state.messageContent}
+          </Message>
 
         </div>
 
@@ -91,4 +109,4 @@ class LoginForm extends Component {
 }
 
 
-export default LoginForm;
+export default VerifyForm;
