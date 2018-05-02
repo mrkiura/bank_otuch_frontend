@@ -30,7 +30,7 @@ const fetchItems = (url) => {
     .set('Authorization', `JWT ${token}`)
     .end((error, result) => {
       if (!error) {
-        resolve(result.body);
+        resolve(result.body.results);
       } else {
         reject(error);
       }
