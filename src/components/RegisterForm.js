@@ -67,9 +67,10 @@ class RegisterForm extends Component {
 
   render() {
     return (
-      <Container fluid textAlign="center" className="ui middle aligned center aligned grid">
-        <div className="column register-form">
+      <Container fluid textAlign="center" className="ui middle aligned aligned center-item grid">
+        <div className="column ui medium form">
           <div className="field">
+          Register
             <Input iconPosition='left' name="email" placeholder='Email' onChange={this.handleFieldChange}>
               <Icon name="at" />
             <input />
