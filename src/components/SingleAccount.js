@@ -38,9 +38,11 @@ class DepositForm extends Component {
     super();
     this.state = {
       messageHidden: true,
+      messageContent: '',
       account: '',
       description: '',
-      amount: 0
+      amount: 0,
+      success: false
     }
     this.handleSubmit = this.handleSubmit.bind(this);
     this.onAccountFormChange = this.onAccountFormChange.bind(this);
@@ -51,12 +53,21 @@ class DepositForm extends Component {
         'deposit', this.state.account, this.state.description, this.state.amount
         ).then((response) => {
             this.setState({
-                messageHidden: false
+                messageHidden: false,
+                messageContent: 'Transaction successful! Your account has been updated successfuly.',
+                success: true
             });
             setTimeout(() => {
               this.setState({ messageHidden: true })
             }, 2000)
-          });
+          })
+          .catch((error) => {
+            this.setState({
+              messageHidden: false,
+              messageContent: `error: ${error}`,
+              success: false
+            })}
+          );
     } else {
       window.location.href = '/login';
     }
@@ -83,9 +94,8 @@ class DepositForm extends Component {
               <Form.Checkbox label='Credit my account with the amount indicated' />
               <Form.Button onClick={this.handleSubmit}>Submit</Form.Button>
           </Form>
-          <Message hidden={this.state.messageHidden} positive>
-              Transaction successful!
-              Your account has been updated successfuly.
+          <Message hidden={this.state.messageHidden} positive={this.state.success} negative={!this.state.success}>
+              {this.state.messageContent}
         </Message>
       </div>
     );
@@ -93,24 +103,76 @@ class DepositForm extends Component {
 }
 
 class WithdrawForm extends Component {
-  handleChange = (e, { value }) => this.setState({ value })
-  state = {}
+  constructor() {
+    super();
+    this.state = {
+      messageHidden: true,
+      messageContent: '',
+      account: '',
+      description: '',
+      amount: 0,
+      success: false
+    }
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.onAccountFormChange = this.onAccountFormChange.bind(this);
+  }
+  handleSubmit(event, value) {
+    if (localStorage.getItem('token')) {
+      createTransaction(
+        'withdraw', this.state.account, this.state.description, this.state.amount
+        ).then((response) => {
+            this.setState({
+                messageHidden: false,
+                messageContent: 'Transaction successful! Your account has been updated successfuly.',
+                success: true
+            });
+            setTimeout(() => {
+              this.setState({ messageHidden: true })
+            }, 2000)
+          })
+          .catch((error) => {
+            this.setState({
+              messageHidden: false,
+              messageContent: 'An error occurred while processing your' +
+                'request. Remember to provide a description and ensure you' +
+                ' have sufficient funds in your account',
+              success: false
+            })}
+          );
+    } else {
+      window.location.href = '/login';
+    }
+  }
+
+  onAccountFormChange(event, data) {
+    let key = data.name;
+    let value = data.value;
+    this.setState({
+        [key]: value
+    });
+  }
 
   render() {
     return (
-      <Form>
-            <Form.Group widths='equal'>
-              <Form.Input fluid label='Transaction Amount' placeholder='Amount' />
-              <Form.Select fluid label='Account' options={options} placeholder='Select Account' />
-            </Form.Group>
+      <div>
+        <Form>
+              <Form.Group widths='equal'>
+                <Form.Input fluid name="amount" label='Transaction Amount' placeholder='Amount' onChange={this.onAccountFormChange}/>
+                <Form.Select fluid name="account" label='Account' options={accounts} placeholder='Select Account' onChange={this.onAccountFormChange}/>
+              </Form.Group>
 
-            <Form.TextArea label='Description' placeholder='Describe the transaction' />
-            <Form.Checkbox label='Debit my account with the amount indicated' />
-            <Form.Button>Submit</Form.Button>
+              <Form.TextArea name="description" label='Description' placeholder='Describe the transaction' onChange={this.onAccountFormChange}/>
+              <Form.Checkbox label='Credit my account with the amount indicated' />
+              <Form.Button onClick={this.handleSubmit}>Submit</Form.Button>
           </Form>
+          <Message hidden={this.state.messageHidden} positive={this.state.success} negative={!this.state.success}>
+              {this.state.messageContent}
+        </Message>
+      </div>
     );
   }
 }
+
 
 class Transactions extends Component {
   handleChange = (e, { value }) => this.setState({ value })
@@ -162,12 +224,10 @@ class Transactions extends Component {
   }
 }
 
-
-
 const panes = [
-  { menuItem: 'Deposit funds', render: () => <Tab.Pane><DepositForm /> Content</Tab.Pane> },
+  { menuItem: 'Deposit funds', render: () => <Tab.Pane><DepositForm /></Tab.Pane> },
   { menuItem: 'Withdraw funds', render: () => <Tab.Pane><WithdrawForm /></Tab.Pane> },
-  { menuItem: 'Transactions', render: () => <Tab.Pane><Transactions /> Content</Tab.Pane> },
+  { menuItem: 'Transactions', render: () => <Tab.Pane><Transactions /></Tab.Pane> },
 ]
 
 const SingleAccount = () => (
